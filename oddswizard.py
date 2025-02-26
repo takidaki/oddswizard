@@ -138,6 +138,27 @@ def fetch_table(country, league, table_type="home"):
         return tables[14] if tables else None
     except Exception as e:
         return None
+
+def fetch_league_table(country, league):
+    url = f"https://www.soccer-rating.com/{country}/{league}/league/"
+    try:
+        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "lxml")
+        html_io = io.StringIO(str(soup))
+        tables = pd.read_html(html_io, flavor="lxml")
+        
+        # Log information about table 16
+        print(f"Table 16 shape: {tables[16].shape}")
+        print(f"Table 16 preview:")
+        print(tables[16].head())
+        print("-" * 50)
+        
+        return tables[16] if tables else None
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return None
+            
 def prob_to_odds(prob):
     """Convert a probability to decimal odds (rounded to 2 decimals)."""
     return round(1 / prob, 2) if prob > 0 else None
